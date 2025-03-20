@@ -1,9 +1,11 @@
+"use client";  // Add this line
+
 import dynamic from "next/dynamic";
 import Container from "@/components/container";
 import { MapPin } from "lucide-react";
 import ChartTitle from "@/components/chart-title";
 
-// Dynamically import the Map component to avoid SSR issues
+// Dynamically import MapComponent without SSR
 const MapComponent = dynamic(() => import("./MapComponent"), { ssr: false });
 
 export default function MapPage() {
