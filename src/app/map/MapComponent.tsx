@@ -1,9 +1,9 @@
 "use client";
 
-import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
-import { useState, useCallback, useEffect } from "react";
+import { GoogleMap, Marker, OverlayView, useLoadScript } from "@react-google-maps/api";
+import { useState, useCallback } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { markers } from "@/data/markers";
+import { markers } from "@/data/markers"; // ✅ Ensure correct import
 
 const mapContainerStyle = {
   width: "100%",
@@ -17,42 +17,9 @@ export default function MapComponent() {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
   });
 
-  const [map, setMap] = useState<google.maps.Map | null>(null);
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
 
-  const onLoad = useCallback((map: google.maps.Map) => setMap(map), []);
-  const onUnmount = useCallback(() => setMap(null), []);
-
-  // Function to convert latLng to pixel coordinates
-  const getPixelPosition = (lat: number, lng: number) => {
-    if (!map) return null;
-    const projection = map.getProjection();
-    if (!projection) return null;
-
-    const latLng = new google.maps.LatLng(lat, lng);
-    const point = projection.fromLatLngToPoint(latLng);
-    if (!point) return null;
-
-    // Convert to actual pixel position in the map container
-    const scale = Math.pow(2, map.getZoom()!);
-    return {
-      x: point.x * scale,
-      y: point.y * scale,
-    };
-  };
-
-  useEffect(() => {
-    if (activeMarker !== null) {
-      const markerData = markers.find((m) => m.id === activeMarker);
-      if (markerData) {
-        const pixelPos = getPixelPosition(markerData.position.lat, markerData.position.lng);
-        if (pixelPos) {
-          setPopupPosition(pixelPos);
-        }
-      }
-    }
-  }, [activeMarker, map]);
+  const onLoad = useCallback((map: google.maps.Map) => {}, []);
 
   if (loadError) return <p>Error loading map</p>;
   if (!isLoaded) return <p>Loading map...</p>;
@@ -65,52 +32,51 @@ export default function MapComponent() {
         center={center}
         zoom={12}
         onLoad={onLoad}
-        onUnmount={onUnmount}
       >
         {/* Loop through markers and create popups */}
         {markers.map((marker) => (
-          <Marker
-            key={marker.id}
-            position={marker.position}
-            icon={{
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              fillColor: marker.status === "congested" ? "red" : "green",
-              fillOpacity: 1,
-              strokeWeight: 2,
-              strokeColor: "white",
-            }}
-            onClick={() => setActiveMarker(marker.id)}
-          />
+          <div key={marker.id}>
+            {/* Google Maps Marker */}
+            <Marker
+              position={marker.position}
+              icon={{
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 8,
+                fillColor: marker.status === "congested" ? "red" : "green",
+                fillOpacity: 1,
+                strokeWeight: 2,
+                strokeColor: "white",
+              }}
+              onClick={() => setActiveMarker(marker.id)}
+            />
+
+            {/* Overlay Popover: Appears Directly on Marker */}
+            {activeMarker === marker.id && (
+              <OverlayView
+                position={marker.position}
+                mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+              >
+                <div className="relative">
+                  <Popover open={true} onOpenChange={() => setActiveMarker(null)}>
+                    <PopoverTrigger asChild>
+                      <button className="w-4 h-4 bg-gray-700 rounded-full border-2 border-white" />
+                    </PopoverTrigger>
+                    <PopoverContent className="bg-gray-900 text-white p-4 rounded-lg shadow-lg w-64">
+                      <p className="font-bold text-lg">{marker.location}</p>
+                      <p className="text-sm text-gray-400">Last Updated: {marker.lastUpdated}</p>
+                      <p className="mt-1">🚗 Vehicles Detected: <span className="font-bold">{marker.vehiclesDetected}</span></p>
+                      <p className="mt-1">🏎️ Car Speed: <span className="font-bold">{marker.carSpeed}</span></p>
+                      {marker.status === "congested" && (
+                        <p className="mt-2 text-red-400">⚠️ <strong>Recommended Actions:</strong> {marker.action}</p>
+                      )}
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </OverlayView>
+            )}
+          </div>
         ))}
       </GoogleMap>
-
-      {/* Display popovers when a marker is clicked at the correct position */}
-      {activeMarker !== null && popupPosition && (
-        <div
-          className="absolute"
-          style={{
-            top: `${popupPosition.y}px`,
-            left: `${popupPosition.x}px`,
-            transform: "translate(-50%, -100%)",
-          }}
-        >
-          <Popover open={true} onOpenChange={() => setActiveMarker(null)}>
-            <PopoverTrigger asChild>
-              <button className="w-4 h-4 bg-gray-700 rounded-full border-2 border-white" />
-            </PopoverTrigger>
-            <PopoverContent className="bg-gray-900 text-white p-4 rounded-lg shadow-lg w-64">
-              <p className="font-bold text-lg">{markers.find((m) => m.id === activeMarker)?.location}</p>
-              <p className="text-sm text-gray-400">Last Updated: {markers.find((m) => m.id === activeMarker)?.lastUpdated}</p>
-              <p className="mt-1">🚗 Vehicles Detected: <span className="font-bold">{markers.find((m) => m.id === activeMarker)?.vehiclesDetected}</span></p>
-              <p className="mt-1">🏎️ Car Speed: <span className="font-bold">{markers.find((m) => m.id === activeMarker)?.carSpeed}</span></p>
-              {markers.find((m) => m.id === activeMarker)?.status === "congested" && (
-                <p className="mt-2 text-red-400">⚠️ <strong>Recommended Actions:</strong> {markers.find((m) => m.id === activeMarker)?.action}</p>
-              )}
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
     </div>
   );
 }
