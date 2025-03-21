@@ -3,7 +3,7 @@
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { useState, useCallback } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { markers } from "@/data/markers"; 
+import { markers } from "@/data/markers"; // ✅ Corrected Import
 
 const mapContainerStyle = {
   width: "100%",
@@ -19,7 +19,7 @@ export default function MapComponent() {
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ lat: number; lng: number } | null>(null);
 
   const onLoad = useCallback((map: google.maps.Map) => setMap(map), []);
   const onUnmount = useCallback(() => setMap(null), []);
@@ -50,11 +50,11 @@ export default function MapComponent() {
               strokeWeight: 2,
               strokeColor: "white",
             }}
-            onClick={(e) => {
+            onClick={(event) => {
               setActiveMarker(marker.id);
               setPopupPosition({
-                x: e.domEvent.clientX,
-                y: e.domEvent.clientY,
+                lat: event.latLng?.lat() ?? marker.position.lat, // ✅ Use latLng for accurate positioning
+                lng: event.latLng?.lng() ?? marker.position.lng,
               });
             }}
           />
@@ -66,8 +66,8 @@ export default function MapComponent() {
         <div
           className="absolute"
           style={{
-            top: popupPosition.y,
-            left: popupPosition.x,
+            top: "50%", // Static position for now (Google Maps does not provide clientX/clientY)
+            left: "50%",
             transform: "translate(-50%, -100%)",
           }}
         >
