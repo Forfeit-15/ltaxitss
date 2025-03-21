@@ -2,7 +2,7 @@
 
 import { GoogleMap, Marker, OverlayView, useLoadScript } from "@react-google-maps/api";
 import { useState, useCallback } from "react";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Popover, PopoverContent } from "@/components/ui/popover"; // ✅ Remove unnecessary imports
 import { markers } from "@/data/markers"; // ✅ Ensure correct import
 
 const mapContainerStyle = {
@@ -58,9 +58,6 @@ export default function MapComponent() {
               >
                 <div className="relative">
                   <Popover open={true} onOpenChange={() => setActiveMarker(null)}>
-                    <PopoverTrigger asChild>
-                      <button className="w-4 h-4 bg-gray-700 rounded-full border-2 border-white" />
-                    </PopoverTrigger>
                     <PopoverContent className="bg-gray-900 text-white p-4 rounded-lg shadow-lg w-64">
                       <p className="font-bold text-lg">{marker.location}</p>
                       <p className="text-sm text-gray-400">Last Updated: {marker.lastUpdated}</p>
