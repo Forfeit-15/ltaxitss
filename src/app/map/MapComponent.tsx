@@ -39,7 +39,6 @@ export default function MapComponent() {
       onLoad={onLoad}
       onUnmount={onUnmount}
     >
-      <Marker position={center} />
     </GoogleMap>
   );
 }

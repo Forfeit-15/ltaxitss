@@ -19,11 +19,6 @@ export const navigations: Navigation[] = [
     href: "/",
   },
   {
-    icon: MessagesSquare,
-    name: "Ticket",
-    href: "/ticket",
-  },
-  {
     icon: MapPin, // 🔹 Added "Map" icon
     name: "Map",  // 🔹 Added "Map" entry
     href: "/map", // 🔹 This will link to your map page
