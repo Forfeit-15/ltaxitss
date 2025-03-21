@@ -2,7 +2,7 @@
 
 import { GoogleMap, Marker, OverlayView, useLoadScript } from "@react-google-maps/api";
 import { useState, useCallback } from "react";
-import { Popover, PopoverContent } from "@/components/ui/popover"; // ✅ Removed PopoverTrigger
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { markers } from "@/data/markers"; // ✅ Ensure correct import
 
 const mapContainerStyle = {
@@ -32,7 +32,6 @@ export default function MapComponent() {
         center={center}
         zoom={12}
         onLoad={onLoad}
-        onClick={() => setActiveMarker(null)} // ✅ Clicking on map closes popovers
       >
         {/* Loop through markers and create popups */}
         {markers.map((marker) => (
@@ -48,7 +47,7 @@ export default function MapComponent() {
                 strokeWeight: 2,
                 strokeColor: "white",
               }}
-              onClick={() => setActiveMarker(marker.id)} // ✅ Clicking marker opens popover
+              onClick={() => setActiveMarker(marker.id)}
             />
 
             {/* Overlay Popover: Appears Directly on Marker */}
@@ -59,10 +58,10 @@ export default function MapComponent() {
               >
                 <div className="relative">
                   <Popover open={true} onOpenChange={() => setActiveMarker(null)}>
-                    <PopoverContent
-                      className="bg-gray-900 text-white p-4 rounded-lg shadow-lg w-64"
-                      align="center"
-                    >
+                    <PopoverTrigger asChild>
+                      <button className="w-0 h-0 opacity-0 absolute" />
+                    </PopoverTrigger>
+                    <PopoverContent className="bg-gray-900 text-white p-4 rounded-lg shadow-lg w-64">
                       <p className="font-bold text-lg">{marker.location}</p>
                       <p className="text-sm text-gray-400">Last Updated: {marker.lastUpdated}</p>
                       <p className="mt-1">🚗 Vehicles Detected: <span className="font-bold">{marker.vehiclesDetected}</span></p>
