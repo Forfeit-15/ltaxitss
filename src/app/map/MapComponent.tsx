@@ -19,6 +19,7 @@ export default function MapComponent() {
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
 
   const onLoad = useCallback((map: google.maps.Map) => setMap(map), []);
   const onUnmount = useCallback(() => setMap(null), []);
@@ -49,39 +50,42 @@ export default function MapComponent() {
               strokeWeight: 2,
               strokeColor: "white",
             }}
-            onClick={() => setActiveMarker(marker.id)}
+            onClick={(e) => {
+              setActiveMarker(marker.id);
+              setPopupPosition({
+                x: e.domEvent.clientX,
+                y: e.domEvent.clientY,
+              });
+            }}
           />
         ))}
       </GoogleMap>
 
-      {/* Display popovers when a marker is clicked */}
-      {markers.map((marker) =>
-        activeMarker === marker.id ? (
-          <div
-            key={marker.id}
-            className="absolute"
-            style={{
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            <Popover open={true} onOpenChange={() => setActiveMarker(null)}>
-              <PopoverTrigger asChild>
-                <button className="w-4 h-4 bg-gray-700 rounded-full border-2 border-white" />
-              </PopoverTrigger>
-              <PopoverContent className="bg-gray-900 text-white p-4 rounded-lg shadow-lg w-64">
-                <p className="font-bold text-lg">{marker.location}</p>
-                <p className="text-sm text-gray-400">Last Updated: {marker.lastUpdated}</p>
-                <p className="mt-1">🚗 Vehicles Detected: <span className="font-bold">{marker.vehiclesDetected}</span></p>
-                <p className="mt-1">🏎️ Car Speed: <span className="font-bold">{marker.carSpeed}</span></p>
-                {marker.status === "congested" && (
-                  <p className="mt-2 text-red-400">⚠️ <strong>Recommended Actions:</strong> {marker.action}</p>
-                )}
-              </PopoverContent>
-            </Popover>
-          </div>
-        ) : null
+      {/* Display popovers when a marker is clicked at the correct position */}
+      {activeMarker !== null && popupPosition && (
+        <div
+          className="absolute"
+          style={{
+            top: popupPosition.y,
+            left: popupPosition.x,
+            transform: "translate(-50%, -100%)",
+          }}
+        >
+          <Popover open={true} onOpenChange={() => setActiveMarker(null)}>
+            <PopoverTrigger asChild>
+              <button className="w-4 h-4 bg-gray-700 rounded-full border-2 border-white" />
+            </PopoverTrigger>
+            <PopoverContent className="bg-gray-900 text-white p-4 rounded-lg shadow-lg w-64">
+              <p className="font-bold text-lg">{markers.find((m) => m.id === activeMarker)?.location}</p>
+              <p className="text-sm text-gray-400">Last Updated: {markers.find((m) => m.id === activeMarker)?.lastUpdated}</p>
+              <p className="mt-1">🚗 Vehicles Detected: <span className="font-bold">{markers.find((m) => m.id === activeMarker)?.vehiclesDetected}</span></p>
+              <p className="mt-1">🏎️ Car Speed: <span className="font-bold">{markers.find((m) => m.id === activeMarker)?.carSpeed}</span></p>
+              {markers.find((m) => m.id === activeMarker)?.status === "congested" && (
+                <p className="mt-2 text-red-400">⚠️ <strong>Recommended Actions:</strong> {markers.find((m) => m.id === activeMarker)?.action}</p>
+              )}
+            </PopoverContent>
+          </Popover>
+        </div>
       )}
     </div>
   );
