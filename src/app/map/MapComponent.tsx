@@ -3,7 +3,7 @@
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { useState, useCallback } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { markers } from "@/components/data/markers"; // ✅ Import markers from external file
+import { markers } from "@/data/markers"; 
 
 const mapContainerStyle = {
   width: "100%",
