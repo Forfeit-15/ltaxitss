@@ -1,9 +1,9 @@
 "use client";
 
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { markers } from "@/data/markers"; // ✅ Corrected Import
+import { markers } from "@/data/markers";
 
 const mapContainerStyle = {
   width: "100%",
@@ -19,10 +19,40 @@ export default function MapComponent() {
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ lat: number; lng: number } | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
 
   const onLoad = useCallback((map: google.maps.Map) => setMap(map), []);
   const onUnmount = useCallback(() => setMap(null), []);
+
+  // Function to convert latLng to pixel coordinates
+  const getPixelPosition = (lat: number, lng: number) => {
+    if (!map) return null;
+    const projection = map.getProjection();
+    if (!projection) return null;
+
+    const latLng = new google.maps.LatLng(lat, lng);
+    const point = projection.fromLatLngToPoint(latLng);
+    if (!point) return null;
+
+    // Convert to actual pixel position in the map container
+    const scale = Math.pow(2, map.getZoom()!);
+    return {
+      x: point.x * scale,
+      y: point.y * scale,
+    };
+  };
+
+  useEffect(() => {
+    if (activeMarker !== null) {
+      const markerData = markers.find((m) => m.id === activeMarker);
+      if (markerData) {
+        const pixelPos = getPixelPosition(markerData.position.lat, markerData.position.lng);
+        if (pixelPos) {
+          setPopupPosition(pixelPos);
+        }
+      }
+    }
+  }, [activeMarker, map]);
 
   if (loadError) return <p>Error loading map</p>;
   if (!isLoaded) return <p>Loading map...</p>;
@@ -50,13 +80,7 @@ export default function MapComponent() {
               strokeWeight: 2,
               strokeColor: "white",
             }}
-            onClick={(event) => {
-              setActiveMarker(marker.id);
-              setPopupPosition({
-                lat: event.latLng?.lat() ?? marker.position.lat, // ✅ Use latLng for accurate positioning
-                lng: event.latLng?.lng() ?? marker.position.lng,
-              });
-            }}
+            onClick={() => setActiveMarker(marker.id)}
           />
         ))}
       </GoogleMap>
@@ -66,8 +90,8 @@ export default function MapComponent() {
         <div
           className="absolute"
           style={{
-            top: "50%", // Static position for now (Google Maps does not provide clientX/clientY)
-            left: "50%",
+            top: `${popupPosition.y}px`,
+            left: `${popupPosition.x}px`,
             transform: "translate(-50%, -100%)",
           }}
         >
