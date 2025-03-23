@@ -8,19 +8,19 @@ import LinearProgress from "./components/linear-progress";
 
 const customerSatisficationOptions = [
   {
-    label: "Positive",
+    label: "Low",
     color: "#5fb67a",
     percentage: customerSatisfication.positive,
     icon: <ThumbsUp className="h-6 w-6" stroke="#5fb67a" fill="#5fb67a" />,
   },
   {
-    label: "Neutral",
+    label: "Medium",
     color: "#f5c36e",
     percentage: customerSatisfication.neutral,
     icon: <ThumbsUp className="h-6 w-6" stroke="#f5c36e" fill="#f5c36e" />,
   },
   {
-    label: "Negative",
+    label: "High",
     color: "#da6d67",
     percentage: customerSatisfication.negative,
     icon: <ThumbsDown className="h-6 w-6" stroke="#da6d67" fill="#da6d67" />,
@@ -30,10 +30,9 @@ const customerSatisficationOptions = [
 export default function CustomerSatisfication() {
   return (
     <section className="flex h-full flex-col gap-2">
-      <ChartTitle title="Customer Satisfication" icon={SmilePlus} />
-      <div className="my-4 flex h-full items-center justify-between">
-        <div className="mx-auto grid w-full grid-cols-2 gap-6">
-          <TotalCustomers />
+      <ChartTitle title="Priority Ratio" icon={SmilePlus} />
+      <div className="my-4 flex h-full items-center justify-center">
+        <div className="grid w-full grid-cols-1 gap-6">
           {customerSatisficationOptions.map((option) => (
             <LinearProgress
               key={option.label}
@@ -46,14 +45,5 @@ export default function CustomerSatisfication() {
         </div>
       </div>
     </section>
-  );
-}
-
-function TotalCustomers() {
-  return (
-    <div className="flex flex-col items-start justify-center">
-      <div className="text-xs text-muted-foreground">Responses Received</div>
-      <div className="text-2xl font-medium">{totalCustomers} Customers</div>
-    </div>
   );
 }

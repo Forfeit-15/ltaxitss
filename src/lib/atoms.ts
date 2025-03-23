@@ -4,7 +4,7 @@ import type { DateRange } from "react-day-picker";
 import { averageTicketsCreated } from "@/data/average-tickets-created";
 import type { TicketMetric } from "@/types/types";
 
-const defaultStartDate = new Date(2023, 11, 18);
+const defaultStartDate = new Date(2025, 2, 1); 
 
 export const dateRangeAtom = atom<DateRange | undefined>({
   from: defaultStartDate,
@@ -25,19 +25,10 @@ export const ticketChartDataAtom = atom((get) => {
       const date = new Date(year, month - 1, day);
       return isWithinInterval(date, { start: startDate, end: endDate });
     })
-    .flatMap((item) => {
-      const res: TicketMetric[] = [
-        {
-          date: item.date,
-          type: "resolved",
-          count: item.resolved,
-        },
-        {
-          date: item.date,
-          type: "created",
-          count: item.created,
-        },
-      ];
-      return res;
-    });
+    .map((item) => ({
+      date: item.date,
+      type: "Vehicles",
+      count: item.count,
+    }));
 });
+
