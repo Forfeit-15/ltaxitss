@@ -30,8 +30,8 @@ export default function ChartSpec() {
       trigger: ["hover", "click"],
       mark: {
         content: [
-          { key: "Date", value: (d) => d?.date },
-          { key: "Vehicles", value: (d) => d?.count },
+          { key: "Date", value: (d: { date: string; count: number }) => d?.date, },
+          { key: "Vehicles", value: (d: { date: string; count: number }) => d?.date, },
         ],
       },
     },
