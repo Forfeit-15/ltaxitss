@@ -1,39 +1,50 @@
-import { getColor } from "@/lib/colors";
+"use client";
+
 import { useAtomValue } from "jotai";
+import { VChart } from "@visactor/react-vchart";
+import type { IBarChartSpec } from "@visactor/vchart";
 import { ticketChartDataAtom } from "@/lib/atoms";
+import type { TicketMetric } from "@/types/types";
 
-export default function ChartSpec() {
-  const data = useAtomValue(ticketChartDataAtom);
+const generateSpec = (data: TicketMetric[]): IBarChartSpec => ({
+  type: "bar",
+  data: [
+    {
+      id: "barData",
+      values: data,
+    },
+  ],
+  xField: "date",
+  yField: "count",
+  seriesField: "type",
+  padding: [10, 0, 10, 0],
+  legends: {
+    visible: false,
+  },
+  stack: false,
+  tooltip: {
+    trigger: ["click", "hover"],
+  },
+  bar: {
+    state: {
+      hover: {
+        outerBorder: {
+          distance: 2,
+          lineWidth: 2,
+        },
+      },
+    },
+    style: {
+      cornerRadius: [12, 12, 12, 12],
+      zIndex: (datum) => {
+        return datum.type === "resolved" ? 2 : 1;
+      },
+    },
+  },
+});
 
-  return {
-    type: "line",
-    xField: "date",
-    yField: "count",
-    seriesField: "type",
-    data: [{ id: "traffic", values: data }],
-    line: {
-      style: {
-        stroke: getColor("primary"),
-        lineWidth: 2,
-      },
-    },
-    point: {
-      style: {
-        fill: getColor("primary"),
-      },
-    },
-    axes: [
-      { orient: "bottom", type: "band", tickStep: 3 },
-      { orient: "left", nice: true },
-    ],
-    tooltip: {
-      trigger: ["hover", "click"],
-      mark: {
-        content: [
-          { key: "Date", value: (d: { date: string; count: number }) => d?.date, },
-          { key: "Vehicles", value: (d: { date: string; count: number }) => d?.date, },
-        ],
-      },
-    },
-  };
+export default function Chart() {
+  const ticketChartData = useAtomValue(ticketChartDataAtom);
+  const spec = generateSpec(ticketChartData);
+  return <VChart spec={spec} />;
 }
