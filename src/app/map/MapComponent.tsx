@@ -2,7 +2,6 @@
 
 import {
   GoogleMap,
-  Marker,
   OverlayView,
   useLoadScript,
 } from "@react-google-maps/api";
@@ -12,14 +11,15 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { markers } from "@/data/markers"; 
+import { markers } from "@/data/markers";
+import { FaLocationArrow } from "react-icons/fa"; // ✅ Icon for markers
 
 const mapContainerStyle = {
   width: "100%",
-  height: "500px",
+  height: "calc(100vh - 100px)", // Adjust to fit your layout
 };
 
-const center = { lat: 1.3521, lng: 103.8198 }; // Singapore center
+const center = { lat: 1.3521, lng: 103.8198 }; // Singapore
 
 export default function MapComponent() {
   const { isLoaded, loadError } = useLoadScript({
@@ -43,20 +43,37 @@ export default function MapComponent() {
       >
         {markers.map((marker) => (
           <div key={marker.id}>
-            <Marker
+            {/* 🟢 Custom React Icon Marker */}
+            <OverlayView
               position={marker.position}
-              icon={{
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                scale: 4,
-                fillColor:
-                  marker.status === "congested" ? "red" : "green",
-                fillOpacity: 1,
-                strokeWeight: 1,
-                rotation: marker.degrees, 
-              }}
-              onClick={() => setActiveMarker(marker.id)}
-            />
+              mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            >
+              <div className="relative flex items-center justify-center">
+                {/* Pulse Animation */}
+                <span
+                  className={`
+                    absolute inline-flex h-6 w-6 rounded-full animate-ping opacity-75
+                    ${marker.status === "congested" ? "bg-red-400" : "bg-green-400"}
+                  `}
+                />
+                {/* React Icon */}
+                <div
+                  className="z-20 flex items-center justify-center w-8 h-8"
+                  onClick={() => setActiveMarker(marker.id)}
+                  style={{ transform: `rotate(${marker.degrees - 45}deg)` }}
+                >
+                  <FaLocationArrow
+                    className={`
+                      text-3xl transition-transform duration-200
+                      ${marker.status === "congested" ? "text-red-600" : "text-green-500"}
+                      hover:scale-125 active:scale-90 cursor-pointer
+                    `}
+                  />
+                </div>
+              </div>
+            </OverlayView>
 
+            {/* 🟡 Popover */}
             {activeMarker === marker.id && (
               <OverlayView
                 position={marker.position}
