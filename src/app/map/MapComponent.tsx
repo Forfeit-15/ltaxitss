@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { markers } from "@/data/markers"; // ✅ Ensure correct path
+import { markers } from "@/data/markers"; 
 
 const mapContainerStyle = {
   width: "100%",
@@ -33,21 +33,6 @@ export default function MapComponent() {
   if (loadError) return <p>Error loading map</p>;
   if (!isLoaded) return <p>Loading map...</p>;
 
-  const getRotation = (dir: string | undefined) => {
-    switch (dir) {
-      case "up":
-        return 0;
-      case "right":
-        return 90;
-      case "down":
-        return 180;
-      case "left":
-        return 270;
-      default:
-        return 0;
-    }
-  };
-
   return (
     <div className="relative">
       <GoogleMap
@@ -58,7 +43,6 @@ export default function MapComponent() {
       >
         {markers.map((marker) => (
           <div key={marker.id}>
-            {/* Directional Marker */}
             <Marker
               position={marker.position}
               icon={{
@@ -68,12 +52,11 @@ export default function MapComponent() {
                   marker.status === "congested" ? "red" : "green",
                 fillOpacity: 1,
                 strokeWeight: 1,
-                rotation: getRotation(marker.direction),
+                rotation: marker.degrees, 
               }}
               onClick={() => setActiveMarker(marker.id)}
             />
 
-            {/* Popup */}
             {activeMarker === marker.id && (
               <OverlayView
                 position={marker.position}
