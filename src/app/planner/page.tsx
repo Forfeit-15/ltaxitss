@@ -7,7 +7,7 @@ import { highwayChats } from "@/data/chat";
 export default function PlannerPage() {
   return (
     <main className="min-h-screen bg-background p-8 space-y-6">
-      <h1 className="text-3xl font-bold mb-4 text-white">🛣️ Traffic Planner – AI Debate</h1>
+      <h1 className="text-3xl font-bold mb-4 text-foreground">🛣️ Traffic Planner – AI Debate</h1>
 
       <Accordion type="single" collapsible className="w-full max-w-4xl mx-auto">
         {highwayChats.map(({ highway, conversation }) => (
