@@ -31,6 +31,12 @@ export default function PlannerPage() {
                   </Card>
                 ))}
               </div>
+
+              <iframe
+                    src="/nx.html"
+                    title={`${highway} Graph`}
+                    className="w-full h-[600px] border rounded-md mt-6"
+                /> 
             </AccordionContent>
           </AccordionItem>
         ))}
