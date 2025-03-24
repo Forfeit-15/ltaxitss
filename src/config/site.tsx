@@ -1,4 +1,4 @@
-import { Gauge, type LucideIcon, MessagesSquare, MapPin } from "lucide-react";
+import { Gauge, type LucideIcon, MessagesSquare, MapPin, MessageSquareQuote } from "lucide-react";
 
 export type SiteConfig = typeof siteConfig;
 export type Navigation = {
@@ -22,5 +22,10 @@ export const navigations: Navigation[] = [
     icon: MapPin, // 🔹 Added "Map" icon
     name: "Map",  // 🔹 Added "Map" entry
     href: "/map", // 🔹 This will link to your map page
+  },
+  {
+    name: "Planner",
+    href: "/planner",
+    icon: MessageSquareQuote, // optional icon
   },
 ];
