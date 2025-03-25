@@ -10,14 +10,14 @@ export const rawMarkers = {
             "pixel_speed": {"average": 0.000835, "relative": 1.209},  // show relative
             "traffic_density": {"average": 0.0, "relative": 0.0},  // show relative
             "num_vehicles": {"average": 0.666667, "relative": 0.0},  // show average
-            "status": "normal",  // popup - status 'congested' + turn red?
+            "status": "congested",  // popup - status 'congested' + turn red?
         },
         "image_data": {
             "datetime": "2025-03-25T23:10:36",  // last updated?
             "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/98da58f9-b10f-4b8d-9d54-0b03da2d3a30.jpg",  // idk how u gonna convert this one
             "height": 240,
             "width": 320,
-            "accident_detected": false,  // popup - Accident Detected + turn red?
+            "accident_detected": true,  // popup - Accident Detected + turn red?
         },
     },
     "1002": {
@@ -31,7 +31,7 @@ export const rawMarkers = {
             "pixel_speed": {"average": 0.000167, "relative": 1.544},
             "traffic_density": {"average": 0.0, "relative": 0.0},
             "num_vehicles": {"average": 1.333333, "relative": 2.25},
-            "status": "normal",
+            "status": "congested",
         },
         "image_data": {
             "datetime": "2025-03-25T23:10:36",

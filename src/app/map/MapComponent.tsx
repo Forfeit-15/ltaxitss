@@ -71,7 +71,7 @@ export default function MapComponent() {
                 <span
                   className={`
                     absolute inline-flex h-6 w-6 rounded-full animate-ping opacity-75
-                    ${marker.status === "congested" ? "bg-red-400" : "bg-green-400"}
+                    ${marker.status === "congested" || marker.action ? "bg-red-400" : "bg-green-400"}
                   `}
                 />
                 {/* React Icon */}
@@ -83,7 +83,7 @@ export default function MapComponent() {
                   <FaLocationArrow
                     className={`
                       text-3xl transition-transform duration-200
-                      ${marker.status === "congested" ? "text-red-600" : "text-green-500"}
+                      ${marker.status === "congested" || marker.action ? "text-red-600" : "text-green-500"}
                       hover:scale-125 active:scale-90 cursor-pointer
                     `}
                   />
