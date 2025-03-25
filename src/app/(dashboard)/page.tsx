@@ -16,9 +16,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { trafficData } from "@/data/priority";
+import { TrafficData } from "@/data/priority";
 
 function TrafficTable() {
+  const trafficRows = Object.entries(TrafficData).map(([area, data]) => ({
+    area,
+    pixelSpeed: data.pixel_speed.average_relative.toFixed(2),
+    trafficDensity: data.traffic_density.average_relative.toFixed(2),
+    vehicles: data.num_vehicles.average_average.toFixed(2),
+    rainfall: data.average_rainfall.toFixed(2),
+    priority: data.priority,
+  }));
+
   return (
     <Container className="mb-6">
       <br></br>
@@ -27,19 +36,21 @@ function TrafficTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Area</TableHead>
-            <TableHead>Vehicles</TableHead>
-            <TableHead>Weather</TableHead>
-            <TableHead>Speed</TableHead>
+            <TableHead>Relative Pixel Speed</TableHead>
+            <TableHead>Relative Traffic Density</TableHead>
+            <TableHead>Avg Vehicles Detected</TableHead>
+            <TableHead>Avg Rainfall</TableHead>
             <TableHead>Priority</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {trafficData.map((row, idx) => (
+          {trafficRows.map((row, idx) => (
             <TableRow key={idx}>
               <TableCell>{row.area}</TableCell>
+              <TableCell>{row.pixelSpeed}</TableCell>
+              <TableCell>{row.trafficDensity}</TableCell>
               <TableCell>{row.vehicles}</TableCell>
-              <TableCell>{row.weather}</TableCell>
-              <TableCell>{row.speed}</TableCell>
+              <TableCell>{row.rainfall}</TableCell>
               <TableCell>{row.priority}</TableCell>
             </TableRow>
           ))}
