@@ -11,8 +11,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { markers } from "@/data/markers";
-import { FaLocationArrow } from "react-icons/fa"; // ✅ Icon for markers
+import { rawMarkers } from "@/data/markers";
+import { FaLocationArrow } from "react-icons/fa"; 
 
 const mapContainerStyle = {
   width: "100%",
@@ -29,6 +29,24 @@ export default function MapComponent() {
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
 
   const onLoad = useCallback((map: google.maps.Map) => {}, []);
+
+  const markers = Object.entries(rawMarkers).map(([id, data]) => ({
+    id: Number(id),
+    position: {
+      lat: data.camera_data.lat,
+      lng: data.camera_data.long,
+    },
+    location: data.camera_data.description,
+    degrees: data.camera_data.angle,
+    status: data.traffic_data.status,
+    vehiclesDetected: Math.round(data.traffic_data.num_vehicles.average),
+    carSpeed: `${(data.traffic_data.pixel_speed.relative * 50).toFixed(1)} km/h`,
+    lastUpdated: new Date(data.image_data.datetime).toLocaleString(),
+    image: data.image_data.image_link,
+    action: data.image_data.accident_detected ? "⚠️ Accident Detected" : null,
+    pixelSpeed: data.traffic_data.pixel_speed.relative.toFixed(2),
+    trafficDensity: data.traffic_data.traffic_density.relative.toFixed(2),
+  }));
 
   if (loadError) return <p>Error loading map</p>;
   if (!isLoaded) return <p>Loading map...</p>;
@@ -78,29 +96,48 @@ export default function MapComponent() {
               <OverlayView
                 position={marker.position}
                 mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                getPixelPositionOffset={() => ({ x: -20, y: -45 })}
               >
                 <div className="relative">
                   <Popover open={true} onOpenChange={() => setActiveMarker(null)}>
                     <PopoverTrigger asChild>
                       <button className="w-0 h-0 opacity-0 absolute" />
                     </PopoverTrigger>
-                    <PopoverContent className="bg-gray-900 text-white p-4 rounded-lg shadow-lg w-64">
+                    <PopoverContent
+                      className={`p-4 rounded-lg shadow-lg w-72 transition-colors ${
+                        marker.status === "congested" || marker.action
+                          ? "bg-red-900 text-white"
+                          : "bg-gray-900 text-white"
+                      }`}
+                    >
                       <p className="font-bold text-lg">{marker.location}</p>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-gray-300">
                         Last Updated: {marker.lastUpdated}
                       </p>
                       <p className="mt-1">
-                        🚗 Vehicles Detected:{" "}
-                        <span className="font-bold">{marker.vehiclesDetected}</span>
+                        Vehicles Detected: <span className="font-bold">{marker.vehiclesDetected}</span>
                       </p>
                       <p className="mt-1">
-                        🏎️ Car Speed:{" "}
-                        <span className="font-bold">{marker.carSpeed}</span>
+                        Car Speed: <span className="font-bold">{marker.carSpeed}</span>
                       </p>
-                      {marker.status === "congested" && (
-                        <p className="mt-2 text-red-400">
-                          ⚠️ <strong>Recommended Actions:</strong>{" "}
-                          {marker.action}
+                      <p className="mt-1">
+                        Pixel Speed:{" "}
+                        <span className="font-bold">{marker.pixelSpeed}</span>
+                      </p>
+                      <p className="mt-1">
+                        Traffic Density:{" "}
+                        <span className="font-bold">{marker.trafficDensity}</span>
+                      </p>
+                      {marker.image && (
+                        <img
+                          src={marker.image}
+                          alt="Live camera feed"
+                          className="mt-3 w-full h-auto rounded"
+                        />
+                      )}
+                      {marker.action && (
+                        <p className="mt-2 text-red-300">
+                          ⚠️ <strong>Recommended Actions:</strong> {marker.action}
                         </p>
                       )}
                     </PopoverContent>
