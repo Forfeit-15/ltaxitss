@@ -9,12 +9,24 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const accountOptions = [
-  "Public Transport",
-  "Nearby Schools",
-  "Construction Zones",
-  "Accident History",
-  "Shopping Areas",
-  "Peak Hour Load",
+  'Traffic Hazard',
+  'Collisions (Injuries)',
+  'Collisions (No Injuries)',
+  'Collisions Enrt',
+  'Hit and Run (No Injuries)',
+  'Reported Fire',
+  'Animal Hazard', 
+  'Construction',
+  'Weekday',
+  'Event_days',
+  'Wisibility',
+  'Surface',
+  'Terrain',
+  'Width',
+  'Weather',
+  'Road flow',
+  'Road occupancy',
+  'Road speed',
 ];
 
 export default function PlannerPage() {
