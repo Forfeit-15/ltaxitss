@@ -22,22 +22,30 @@ function TrafficTable() {
   const trafficRows = Object.entries(TrafficData).map(([area, data]) => ({
     area,
     pixelSpeed: data.pixel_speed.average_relative.toFixed(2),
-    trafficDensity: data.traffic_density.average_relative.toFixed(2),
+    accidents:
+      data.accidents_detected.length > 0
+        ? data.accidents_detected.join(", ")
+        : "None",
     vehicles: data.num_vehicles.average_average.toFixed(2),
     rainfall: data.average_rainfall.toFixed(2),
     priority: data.priority,
   }));
 
+  const firstDatetime = Object.values(TrafficData)[0]?.datetime;
+  const formattedTimestamp = new Date(firstDatetime).toLocaleString();
+
   return (
     <Container className="mb-6">
-      <br></br>
-      <h2 className="text-lg font-semibold mb-4">Live Traffic Overview</h2>
+      <br />
+      <h2 className="text-lg font-semibold mb-4">
+        Live Traffic Overview – Last updated: {formattedTimestamp}
+      </h2>
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Area</TableHead>
             <TableHead>Relative Pixel Speed</TableHead>
-            <TableHead>Relative Traffic Density</TableHead>
+            <TableHead>Accidents</TableHead>
             <TableHead>Avg Vehicles Detected</TableHead>
             <TableHead>Avg Rainfall</TableHead>
             <TableHead>Priority</TableHead>
@@ -48,7 +56,7 @@ function TrafficTable() {
             <TableRow key={idx}>
               <TableCell>{row.area}</TableCell>
               <TableCell>{row.pixelSpeed}</TableCell>
-              <TableCell>{row.trafficDensity}</TableCell>
+              <TableCell>{row.accidents}</TableCell>
               <TableCell>{row.vehicles}</TableCell>
               <TableCell>{row.rainfall}</TableCell>
               <TableCell>{row.priority}</TableCell>
